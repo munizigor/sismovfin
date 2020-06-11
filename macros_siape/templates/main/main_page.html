@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block main_page %}
+<h2>GERAÇÃO DE MACROS</h2>
+<div class="dropdown-divider"></div>
+<form action="{% url 'submit_movfin' %}" method="post" enctype="multipart/form-data"> {% csrf_token %}
+<div class="container">
+
+		<!-- Passando parâmetro oculto para identificar tipo de Operação-->
+	  <input type="hidden" name="op" value="9" />
+	  <input type="hidden" name="lancado_por" value= "{{request.user|safe}}"/>
+
+	  <div class="form-row">
+<!--		<div class="form-group col-md-12">-->
+<!--			<label>Descrição do Lançamento</label>-->
+<!--			<input type="text" name="sei" maxlength="60" class="form-control" id="sei" required="">-->
+<!--		</div>-->
+<!--		<div class="form-group col-md-3">-->
+<!--		  <label>Mês de Pagamento</label> &lt;!&ndash;TODO: Colocar datepicker mesano do jquery&ndash;&gt;-->
+<!--			<input type="text" name="mesano" class="form-control datam" id="mesano" required="">-->
+<!--		</div>-->
+<!--		<div class="form-group col-md-3">-->
+<!--		  	<label>Número da Planilha</label>-->
+<!--			<input type="text" name="doc_ref" maxlength="20" class="form-control" id="doc_ref" required="">-->
+
+<!--		</div>-->
+<!--		<div class="form-group col-md-5">-->
+<!--		  	<label>Unidade</label>-->
+<!--			<select class="form-control" id="uorg" name="uorg" required="">-->
+<!--				{% for item in uorg|dictsort:"nome" %}-->
+<!--					<option value="{{item.cod}}" {% if item.cod == 200034000 %} selected="" {% endif %}> {{item.nome}}</option>-->
+<!--				{% endfor %}-->
+<!--			</select>-->
+<!--		</div>-->
+	  </div>
+	  <div class="form-row">
+<!--		<div class="form-group col-md-8">-->
+<!--		  <label>Nome da Operação</label>-->
+<!--			<input type="text" name="nome" maxlength="60" class="form-control" id="nome" required="">-->
+<!--		</div>-->
+			<div class="form-group col-md-12">
+		 	<label>Arquivo .CSV<input type="file" name="csv_file" id="csv_file" required="True" class="form-control"
+		 		style="border: 0px; margin-bottom: 10px; padding: 0px;"></label>
+			</div>
+
+<!--		    <div class="form-group col-md-3">-->
+<!--			  <label>Mês de Pagamento</label>-->
+<!--			  <input type="text" id="mes_pgto" name="mes_pgto" class="form-control" value="{{mes_pgto}}" readonly>-->
+<!--			</div>-->
+	  </div>
+    <div class="row">
+		<button class="btn btn-success btn-lg btn-block">Gerar Macro</button>
+    </div>
+
+
+
+</div>
+</form>
+
+<!--Bloco para definir seletor de data apenas para mês e ano-->
+<style>
+	.ui-datepicker-calendar {
+		display: none;
+	}
+</style>
+<script>
+	$(".datam").datepicker({
+		 changeMonth: true,
+		 changeYear: true,
+		 dateFormat: 'mm/yy',
+		 monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+		 onClose: function(dateText, inst) {
+			$(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+		 }
+	});
+</script>
+{% endblock %}

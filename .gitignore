@@ -1,0 +1,8 @@
+venv/
+Tabelas db/
+.idea/
+db.sqlite3
+*.mac
+**/migrations/*
+*.pyc
+/__pycache__/
