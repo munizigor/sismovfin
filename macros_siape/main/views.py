@@ -1,14 +1,21 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.contrib import messages
 from datetime import datetime
 import re
 from macros_siape.macros import baixar_macro
 import time
+import os
+from django.conf import settings
 
 
 
 def index(request):
 	return render(request, 'main/main_page.html')
+def download_sample(request):
+	response = HttpResponse(open(os.path.join(settings.MEDIA_ROOT, r'main/modelo_arquivo.csv'), 'rb'), content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename= modelo.csv'
+	return response
 def submit_movfin(request):
 	start_time = time.time()
 	message = None

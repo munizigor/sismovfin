@@ -2,6 +2,7 @@ from datetime import datetime
 import ast
 from locale import setlocale, LC_ALL
 import os
+import zipfile
 from django.conf import settings
 from django.http import HttpResponse
 import time
@@ -34,7 +35,27 @@ OPCOES = {
     "altera_fard": "Atualização de índice fardamento pelo CDIEINDFAR",
     "inclusao_servidores": "Inclusão de Servidores pelo CDINREGIST",
 }
+def zipdir(directory, zipname):
+    """
+    Compress a directory (ZIP file).
+    """
+    if os.path.exists(directory):
+        outZipFile = zipfile.ZipFile(zipname, 'w', zipfile.ZIP_DEFLATED)
 
+        # The root directory within the ZIP file.
+        rootdir = os.path.basename(directory)
+
+        for dirpath, dirnames, filenames in os.walk(directory):
+            for filename in filenames:
+                # Write the file named filename to the archive,
+                # giving it the archive name 'arcname'.
+                filepath = os.path.join(dirpath, filename)
+                parentpath = os.path.relpath(filepath, directory)
+                arcname = os.path.join(rootdir, parentpath)
+
+                outZipFile.write(filepath, arcname)
+
+    outZipFile.close()
 def baixar_macro(op, query):
 
     def exitscreen(count):
@@ -303,6 +324,15 @@ def baixar_macro(op, query):
     )
 
     body = ""
+    footer = (
+        "</HAScript>"
+    )
+    MAX_NUMBER_OF_LINES = 200
+    timestamp = datetime.now()
+    fname = op + "_" + str(timestamp.strftime("%Y%M%d_%Hh%Mm%Ss%fms"))
+    file_path = os.path.join(settings.MEDIA_ROOT, r'main/macros' + '/' + fname)
+    os.mkdir(file_path)
+    file_counter = 1
     start_time = time.time()
     for linha_incl in range(len(query)):
 
@@ -326,20 +356,17 @@ def baixar_macro(op, query):
             )
             count += 1
             body += screen
-    print('Tempo para execução MACROS: ' + str(time.time() - start_time))
-    footer = (
-        "</HAScript>"
-    )
-    macro = header + body + footer
-    # print (macro)
-    fname = op + "_" + str(datetime.now().strftime("%d%b%Y_%Hh%Mm%Ss%fms")) + ".mac"
-    file_path = os.path.join(settings.MEDIA_ROOT, r'main/macros' + '/' + fname)
-    with open(file_path, "w") as f:
-        # chunk=400
-        # for i in range(0,len(macro),chunk):
-        #     f.write(macro[i:chunk])
-        f.write(macro)
-    response = HttpResponse(open(file_path, "r").read())
-    response['Content-Disposition'] = 'attachment; filename=' + fname
-    response['Content-Type'] = 'application/octet-stream'
+        if ((linha_incl + 1) % MAX_NUMBER_OF_LINES == 0) or (linha_incl + 1 == len(query)):
+            macro = header + body + footer
+            with open(file_path + '/' + str(file_counter) + ".mac", 'w') as f:
+                f.write(macro)
+                file_counter += 1
+            body = ""
+            count = 0
+            print('Tempo para execução MACROS: ' + str(time.time() - start_time))
+
+    zip_path = os.path.join(settings.MEDIA_ROOT, r'main/zip_files' + '/' + fname + ".zip")
+    zipdir(file_path, zip_path)
+    response = HttpResponse(open(zip_path, 'rb'), content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename= Macro.zip'
     return response

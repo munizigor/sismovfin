@@ -7,5 +7,6 @@ urlpatterns = [
 
 	# path('success/', views.success, name='success'),
 	path('submit_movfin/', views.submit_movfin, name='submit_movfin'),
+    path('download_sample/', views.download_sample, name='download_sample'),
 
 ]
