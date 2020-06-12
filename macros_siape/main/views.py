@@ -1,28 +1,27 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib import messages
 from datetime import datetime
 import re
-# from macros_siape import gerarMOVFIN, limpastr
 from macros_siape.macros import baixar_macro
+import time
 
 
 
 def index(request):
 	return render(request, 'main/main_page.html')
 def submit_movfin(request):
+	start_time = time.time()
 	message = None
 	if request.method == 'GET':
 		message = ('Por favor, tente novamente.')
 	elif request.method == 'POST':
-		form = request.POST.get
 		csv_file = request.FILES['csv_file']
 		file_data = csv_file.read().decode("utf-8", "ignore")
 		file_data = file_data.split("\n")
 		movfin_list = []
 		# Verificando se a primeira linha eh cabecalho
 		init = 0
-		if file_data[0].split(";")[0].isalpha():
+		if not(file_data[0].split(";")[0].isnumeric()):
 			init = 1
 		for idx, line in enumerate(file_data[init:]):
 			movfin = {}
@@ -36,7 +35,7 @@ def submit_movfin(request):
 							  ' as colunas \'MATRICULA\', \'REND/DESC\', \'RUBRICA\', \'SEQUENCIA\' e \'OPERAÇÃO\'  ')
 
 			try:
-				movfin['op'] = str(re.sub('[^a-zA-Z]', '', fields[4][0]).strip()).upper()
+				movfin['op'] = str(re.sub('[^a-zA-Z]|[\x22]', '', fields[4][0]).strip()).upper()
 			except IndexError:
 				message = message_length
 				break
@@ -45,12 +44,21 @@ def submit_movfin(request):
 				break
 			else:
 				movfin['matricula_titular'] = str(re.sub('[^0-9]', '', fields[0]).strip()).zfill(7)
-				movfin['r_d'] = str(re.sub('[^a-zA-Z]', '', fields[1][0]).strip()).upper()
+				movfin['r_d'] = str(re.sub('[^a-zA-Z]|[\x22]', '', fields[1][0]).strip()).upper()
 				movfin['rubrica'] = str(re.sub('[^0-9]', '', fields[2]).strip()).zfill(5)
 				movfin['seq'] = str(re.sub('[^0-9]', '', fields[3]).strip()).zfill(0)
 				if movfin['op']!='E':
-					movfin['prazo'] = str(re.sub('[^0-9]', '', fields[5]).strip()).zfill(3) if int(movfin['seq']) in range (1,6) else str(fields[5].strip()).upper()
-					movfin['valor'] = '{:.2f}'.format(float(fields[6].replace(',','.').strip()))  # TODO: Nao dividir por 100 se valores ja estiverem formatados
+					movfin['prazo'] = str(re.sub('[^0-9]', '', fields[5]).strip()).zfill(3) if int(float(movfin['seq'])) in range (1,6) else str(fields[5].strip()).upper()
+					try:
+						movfin['valor'] = '{:.2f}'.format(float(fields[6].replace(',','.').strip()))  # TODO: Nao dividir por 100 se valores ja estiverem formatados
+					except ValueError:
+						message = ('Erro na linha ' + str(idx+1) + '. Certifique que o CSV foi salvo SEM FORMATAR CAMPOS ENTRE ASPAS COMO TEXTO')
+						break
+						# print (fields)
+						# print(fields[4])
+						# print('"' in fields[4])
+						# print(fields[0])
+						# print (movfin['op'])
 					movfin['ass_calc'] = '{00}'.format(str(re.sub('[^0-9]', '', fields[7]).strip()))
 					movfin['doc_legal'] = str(fields[8][:30].strip()).upper()
 					movfin['justificativa'] = str(fields[9][:200].strip()).upper() + ' - LANCADO EM ' + str(datetime.now().strftime("%d%b%Y às %H:%M:%S"))
@@ -70,10 +78,10 @@ def submit_movfin(request):
 		# if serv_error:
 		# 	message = ('Matrícula(s) não encontrada(s): {}'.format((', '.join(serv_error))))
 		# TODO: salvar dados do formulario
-		print(movfin_list[0])
 
 	if message:
 		messages.error(request, message, extra_tags='safe')
 		return index(request)
 	else:
+		print('Tempo para execução VIEWS: ' + str(time.time() - start_time))
 		return baixar_macro('movfin',movfin_list)

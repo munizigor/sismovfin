@@ -4,6 +4,7 @@ from locale import setlocale, LC_ALL
 import os
 from django.conf import settings
 from django.http import HttpResponse
+import time
 
 """
 Lib destinada a gerar macros para o Terminal HOD
@@ -302,8 +303,9 @@ def baixar_macro(op, query):
     )
 
     body = ""
-
+    start_time = time.time()
     for linha_incl in range(len(query)):
+
         for tela in act(0):
             screen = (
                 # Condicionais em entry e exitscreen dependendo se forem a tela de entrada ou saida
@@ -324,7 +326,7 @@ def baixar_macro(op, query):
             )
             count += 1
             body += screen
-
+    print('Tempo para execução MACROS: ' + str(time.time() - start_time))
     footer = (
         "</HAScript>"
     )
@@ -333,6 +335,9 @@ def baixar_macro(op, query):
     fname = op + "_" + str(datetime.now().strftime("%d%b%Y_%Hh%Mm%Ss%fms")) + ".mac"
     file_path = os.path.join(settings.MEDIA_ROOT, r'main/macros' + '/' + fname)
     with open(file_path, "w") as f:
+        # chunk=400
+        # for i in range(0,len(macro),chunk):
+        #     f.write(macro[i:chunk])
         f.write(macro)
     response = HttpResponse(open(file_path, "r").read())
     response['Content-Disposition'] = 'attachment; filename=' + fname
