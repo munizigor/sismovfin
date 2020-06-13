@@ -1,0 +1,125 @@
+@charset "UTF-8";
+* {
+    box-sizing: border-box;
+}
+*:before,
+*:after {
+ box-sizing: border-box;
+}
+html,
+body {
+ height: 100%;
+ position: relative;
+}
+div.main-container {
+ min-height: 100vh; /* will cover the 100% of viewport */
+ overflow: hidden;
+ display: block;
+ position: relative;
+ padding-bottom: 100px; /* height of your footer */
+}
+nav.navbar {
+	margin-bottom: 0px;
+}
+div.topo-ini {
+	background-color: #292b2c;
+	height: 25px;
+	width: 100%;
+	text-align: left;
+	margin-left: 0px;
+	color: white;
+}
+div.topo-ini p{
+	margin-left: 20px;
+}
+navbar-default {
+    background-color: #F8F8F8;
+    border-color: #E7E7E7;
+}
+a.btn-secondary{
+	margin-right: 10px;
+}
+a.btn-secondary{
+	margin-right: 10px;
+}
+a.nav-link{
+	border-radius: .25rem;
+	transition: .15s;
+	padding: .460rem .75rem;
+}
+
+a.nav-link:hover {
+	background-color: #6c757d
+}
+div.calculos {
+padding-top: 280px;
+border-left: 1px solid #ccc;
+}
+div.calculos-excl {
+border-left: 1px solid #ccc;
+}
+h1 a {
+    padding-left: 15px;
+	color: #FCA205;
+}
+h2 {
+	margin-bottom: 80px; 
+	text-align:center;
+    padding-left: 15px;
+    margin-top: 40px;
+}
+h3 a {
+    padding-left: 15px;
+	color: #90EE90;
+}
+h4 { 
+	margin-bottom: 30px;
+}
+
+ul {
+    list-style-type: none;
+}
+textarea.form-control{
+	resize: none;
+	height: calc(2.25rem + 2px);
+}
+div.child{
+	margin-bottom: 40px;
+	margin-top: 40px;
+	margin-left: 40px;
+
+}
+div.content{
+  /*TODO: Montar um sidebar flutuante para aparecer aba cálculos*/
+    margin-left: 40px;
+    padding-right: 20px;
+    padding-left: 20px;
+    max-width: 1200px;
+
+
+}
+div.topo-ini a{
+    text-decoration: none;
+    color: white;
+}
+footer {
+    color: white;
+    background: #343a40;
+    width: 100%;
+    font-size: 12px;
+    position: absolute;
+    bottom: 0;
+    text-align:center;
+}
+footer p {
+    line-height: 1.0;
+    height: 4px;
+}
+ul.li user {
+    text-align:right;
+}
+input.update_dados {
+    border: 0px;
+    margin-bottom: 10px;
+    padding: 0px;
+}
