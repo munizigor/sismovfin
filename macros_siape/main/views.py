@@ -61,11 +61,6 @@ def submit_movfin(request):
 					except ValueError:
 						message = ('Erro na linha ' + str(idx+1) + '. Certifique que o CSV foi salvo SEM FORMATAR CAMPOS ENTRE ASPAS COMO TEXTO')
 						break
-						# print (fields)
-						# print(fields[4])
-						# print('"' in fields[4])
-						# print(fields[0])
-						# print (movfin['op'])
 					movfin['ass_calc'] = '{00}'.format(str(re.sub('[^0-9]', '', fields[7]).strip()))
 					movfin['doc_legal'] = str(fields[8][:30].strip()).upper()
 					movfin['justificativa'] = str(fields[9][:200].strip()).upper() + ' - LANCADO EM ' + str(datetime.now().strftime("%d%b%Y às %H:%M:%S"))
@@ -76,16 +71,6 @@ def submit_movfin(request):
 					movfin['doc_legal'] = None
 					movfin['justificativa'] = None
 				movfin_list.append(movfin)
-				# Verificar se todas as matrículas existem
-		# 		try:
-		# 			if Servidor.objects.get(matricula=matricula_titular):
-		# 				serv_success[matricula_titular] = valor
-		# 		except Servidor.DoesNotExist:
-		# 			serv_error.append(matricula_titular)
-		# if serv_error:
-		# 	message = ('Matrícula(s) não encontrada(s): {}'.format((', '.join(serv_error))))
-		# TODO: salvar dados do formulario
-
 	if message:
 		messages.error(request, message, extra_tags='safe')
 		return index(request)

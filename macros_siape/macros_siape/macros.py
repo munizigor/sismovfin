@@ -366,6 +366,7 @@ def baixar_macro(op, query):
             print('Tempo para execução MACROS: ' + str(time.time() - start_time))
 
     zip_path = os.path.join(settings.MEDIA_ROOT, r'main/zip_files' + '/' + fname + ".zip")
+    os.makedirs(os.path.dirname(zip_path), exist_ok=True)
     zipdir(file_path, zip_path)
     response = HttpResponse(open(zip_path, 'rb'), content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename= Macro.zip'
