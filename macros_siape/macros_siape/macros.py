@@ -331,7 +331,11 @@ def baixar_macro(op, query):
     timestamp = datetime.now()
     fname = op + "_" + str(timestamp.strftime("%Y%M%d_%Hh%Mm%Ss%fms"))
     file_path = os.path.join(settings.MEDIA_ROOT, r'main/macros' + '/' + fname)
-    os.mkdir(file_path)
+    
+    #zip_path = os.path.join(settings.MEDIA_ROOT, r'main/zip_files' + '/' + fname + ".zip")
+    os.makedirs(os.path.dirname(file_path+ '/'), exist_ok=True)
+    
+    #os.mkdir(file_path)
     file_counter = 1
     start_time = time.time()
     for linha_incl in range(len(query)):
